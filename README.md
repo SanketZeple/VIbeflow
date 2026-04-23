@@ -105,7 +105,7 @@ The entire stack can be run with Docker Compose. This is the easiest way to get 
 ### Steps
 
 1. Clone the repository (if not already).
-2. Ensure you have a `.env` file in the `backend` directory (copy from `.env.example`).
+2. Create `.env` files with the required environment variables (see Environment Variables section below).
 3. From the project root, run:
 
    ```bash
@@ -152,13 +152,44 @@ All tests should pass.
 
 ## Environment Variables
 
-Create a `.env` file in the `backend` directory for sensitive configuration:
+The application requires two `.env` files for Docker Compose deployment:
+
+### 1. Root `.env` file (for Docker Compose)
+Create `.env` in the project root with:
 
 ```env
-SECRET_KEY=your-secret-key
-DATABASE_URL=postgresql+psycopg2://postgres:postgres@localhost:5432/vibeflow
+# PostgreSQL Database Configuration
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=postgres
+POSTGRES_DB=vibeflow
+POSTGRES_PORT=5432
+
+# Backend Service Configuration
+BACKEND_PORT=8001
+SECRET_KEY=your-secure-secret-key-change-this-in-production
 DEBUG=False
+
+# Frontend Service Configuration
+FRONTEND_PORT=8080
+VITE_API_BASE_URL=http://localhost:8001
+
+# Database URL (used by backend)
+DATABASE_URL=postgresql+psycopg2://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
 ```
+
+### 2. Backend `.env` file
+Create `backend/.env` with:
+
+```env
+APP_NAME=Backend API
+DEBUG=False
+SECRET_KEY=your-secure-secret-key-change-this-in-production
+ALGORITHM=HS256
+ACCESS_TOKEN_EXPIRE_MINUTES=30
+DATABASE_URL=postgresql+psycopg2://postgres:postgres@postgres:5432/vibeflow
+```
+
+**Note**: Both `.env` files are gitignored. Use these templates to create your own configuration files.
 
 ## Running Tests
 

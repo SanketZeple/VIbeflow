@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
 from app.db.session import get_db
@@ -16,8 +16,4 @@ def get_time_report(
     current_user: UserInDB = Depends(get_current_user),
 ):
     """Get time report with total hours per task and grand total."""
-    try:
-        report = BoardService.get_time_report(db)
-        return report
-    except Exception as e:
-        raise HTTPException(status_code=500, detail="Failed to generate time report")
+    return BoardService.get_time_report(db)

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, Clock, MessageSquare, Paperclip, Activity, User, Save, Plus, ChevronDown } from 'lucide-react'
 import boardService from '../services/board'
+import { getUserColor, getUserInitials } from '../utils/userColors'
 
 const TaskModal = ({ task, isOpen, onClose, onUpdate, users = [] }) => {
   const [assigneeId, setAssigneeId] = useState(task?.assignee_id || null)
@@ -27,11 +28,14 @@ const TaskModal = ({ task, isOpen, onClose, onUpdate, users = [] }) => {
     return user ? user.email.split('@')[0] : `User ${userId}`
   }
 
-  // Helper to get user initial
-  const getUserInitial = (userId) => {
-    if (!userId) return '?'
+  // Helper to get user data
+  const getAvatarData = (userId) => {
+    if (!userId) return { initials: '?', color: 'bg-[#42526E]' }
     const user = users.find(u => u.id === userId)
-    return user && user.email ? user.email.charAt(0).toUpperCase() : 'U'
+    return {
+      initials: getUserInitials(user || { email: userId.toString() }),
+      color: getUserColor(userId)
+    }
   }
 
   useEffect(() => {
@@ -148,8 +152,7 @@ const TaskModal = ({ task, isOpen, onClose, onUpdate, users = [] }) => {
               className="bg-[#1D2125]/95 backdrop-blur-2xl w-full max-w-2xl lg:max-w-3xl h-[85vh] max-h-[85vh] min-h-[400px] grid grid-rows-[auto_1fr_auto] relative z-[101] shadow-[0_24px_80px_rgba(0,0,0,0.8)] overflow-hidden rounded-[20px] border border-white/[0.08]"
             >
             {/* Ambient glows */}
-            <div className="absolute top-[-10%] right-[-10%] w-[300px] h-[300px] bg-accent/10 rounded-full blur-[100px] pointer-events-none mix-blend-screen z-0"></div>
-            <div className="absolute bottom-[-10%] left-[-10%] w-[300px] h-[300px] bg-purple-600/5 rounded-full blur-[100px] pointer-events-none mix-blend-screen z-0"></div>
+
 
             {/* Header */}
             <div className="px-[24px] py-[20px] border-b border-white/[0.06] bg-[#1A1D21]/90 backdrop-blur-xl z-20 flex justify-between items-start relative">
@@ -163,7 +166,7 @@ const TaskModal = ({ task, isOpen, onClose, onUpdate, users = [] }) => {
                     {formatDate(task.created_at)}
                   </span>
                 </div>
-                <h2 className="text-[24px] font-bold text-transparent bg-clip-text bg-gradient-to-r from-white to-text-secondary leading-[1.3] tracking-tight mb-[8px]">
+                <h2 className="text-[24px] font-bold text-white leading-[1.3] tracking-tight mb-[8px]">
                   {task.title}
                 </h2>
                 <div className="text-[14px] font-medium text-text-secondary flex items-center gap-[6px]">
@@ -216,8 +219,8 @@ const TaskModal = ({ task, isOpen, onClose, onUpdate, users = [] }) => {
                         </option>
                       ))}
                     </select>
-                    <div className="absolute left-[12px] top-1/2 -translate-y-1/2 flex items-center justify-center w-[32px] h-[32px] rounded-full bg-gradient-to-tr from-accent to-purple-500 shadow-sm border border-white/20 text-white text-[14px] font-extrabold pointer-events-none">
-                      {getUserInitial(assigneeId)}
+                    <div className={`absolute left-[12px] top-1/2 -translate-y-1/2 flex items-center justify-center w-[32px] h-[32px] rounded-full ${getAvatarData(assigneeId).color} border border-white/10 text-white text-[12px] font-bold pointer-events-none uppercase`}>
+                      {getAvatarData(assigneeId).initials}
                     </div>
                     <div className="absolute right-[16px] top-1/2 -translate-y-1/2 pointer-events-none text-text-muted group-hover:text-white transition-colors">
                       <ChevronDown className="w-[20px] h-[20px]" />
@@ -303,9 +306,9 @@ const TaskModal = ({ task, isOpen, onClose, onUpdate, users = [] }) => {
                     ) : worklogs.length > 0 ? (
                       worklogs.map((worklog) => (
                         <div key={worklog.id} className="group flex items-start gap-[16px] p-[16px] rounded-[12px] bg-white/[0.02] border border-white/[0.04] hover:bg-white/[0.04] hover:border-white/[0.08] transition-all">
-                          <div className="w-[40px] h-[40px] rounded-full bg-gradient-to-br from-accent/20 to-purple-600/20 border border-white/[0.1] flex items-center justify-center shadow-sm shrink-0">
-                            <span className="text-[14px] font-bold text-white tracking-widest uppercase">
-                               {getUserInitial(worklog.user_id)}
+                          <div className={`w-[36px] h-[36px] rounded-full ${getAvatarData(worklog.user_id).color} border border-white/10 flex items-center justify-center shadow-sm shrink-0`}>
+                            <span className="text-[12px] font-bold text-white uppercase">
+                               {getAvatarData(worklog.user_id).initials}
                             </span>
                           </div>
                           <div className="flex-1 min-w-0">
@@ -363,7 +366,7 @@ const TaskModal = ({ task, isOpen, onClose, onUpdate, users = [] }) => {
                           className="relative pl-[24px]"
                         >
                           {/* Glowing Timeline dot */}
-                          <div className="absolute -left-[30px] top-[4px] w-[14px] h-[14px] rounded-full bg-accent shadow-[0_0_10px_rgba(87,157,255,0.8)] border-[3px] border-[#1D2125]"></div>
+                          <div className="absolute -left-[28px] top-[6px] w-[10px] h-[10px] rounded-full bg-accent border-[2px] border-[#1D2125]"></div>
                           <div className="text-[15px] text-text-secondary leading-snug">
                             <span className="font-bold text-white">{getUserEmail(record.changed_by)}</span> changed assignee from{' '}
                             <span className="font-bold text-white px-[6px] py-[2px] bg-white/[0.05] rounded-[4px] border border-white/[0.05]">{getUserEmail(record.old_assignee_id)}</span> to{' '}
@@ -403,7 +406,7 @@ const TaskModal = ({ task, isOpen, onClose, onUpdate, users = [] }) => {
                 <button
                   onClick={handleSave}
                   disabled={loading}
-                  className="px-[32px] py-[12px] text-[15px] font-bold text-white bg-gradient-to-r from-accent to-purple-500 rounded-[12px] shadow-[0_8px_24px_rgba(87,157,255,0.4)] hover:shadow-[0_12px_32px_rgba(87,157,255,0.6)] transition-all hover:-translate-y-[2px] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center gap-[8px] group"
+                  className="px-[32px] py-[12px] text-[15px] font-bold text-white bg-accent hover:bg-accent-hover rounded-[12px] shadow-sm transition-all hover:-translate-y-[1px] disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-[10px] group"
                 >
                   {loading ? (
                     <>

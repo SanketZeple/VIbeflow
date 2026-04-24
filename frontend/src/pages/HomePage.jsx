@@ -426,11 +426,7 @@ const HomePage = () => {
   }
 
   return (
-    <div className="w-full px-6 py-6 relative overflow-hidden min-h-screen bg-page-bg">
-      {/* Cinematic background glow */}
-      <div className="absolute top-[-10%] right-[-5%] w-[40%] h-[40%] bg-accent/10 rounded-full blur-[120px] pointer-events-none mix-blend-screen z-0"></div>
-      <div className="absolute bottom-[-10%] left-[-5%] w-[30%] h-[30%] bg-purple-500/10 rounded-full blur-[120px] pointer-events-none mix-blend-screen z-0"></div>
-
+    <div className="w-full px-6 py-6 min-h-screen bg-page-bg">
       <motion.div 
         variants={containerVariants}
         initial="hidden"
@@ -442,11 +438,11 @@ const HomePage = () => {
         <div className="flex justify-between items-start">
           <div className="flex items-center gap-[16px]">
             <motion.div 
-              whileHover={{ scale: 1.05, rotate: -5 }}
-              whileTap={{ scale: 0.95 }}
-              className="w-[64px] h-[64px] shrink-0 rounded-[16px] bg-gradient-to-br from-accent to-purple-500 flex items-center justify-center shadow-[0_8px_24px_rgba(87,157,255,0.2)] border border-white/10 cursor-pointer"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className="w-[56px] h-[56px] shrink-0 rounded-[12px] bg-accent/15 border border-accent/30 flex items-center justify-center text-accent cursor-pointer"
             >
-              <LayoutDashboard className="w-[32px] h-[32px] text-white drop-shadow-md" strokeWidth={2} />
+              <LayoutDashboard className="w-[28px] h-[28px]" strokeWidth={2} />
             </motion.div>
             <div>
               <h1 className="text-[32px] font-extrabold text-text-primary leading-tight tracking-tight mb-[4px]">Project Board</h1>
@@ -584,9 +580,9 @@ const HomePage = () => {
               onClick={() => {
                 setModalOpen(true)
               }}
-              className="ml-auto px-4 py-2 bg-gradient-to-r from-accent to-purple-500 text-white rounded-lg hover:opacity-90 transition-all duration-200 flex items-center space-x-2 shadow-md shadow-accent/20 hover:-translate-y-0.5 text-[14px] font-medium"
+              className="ml-auto px-[20px] py-[10px] bg-accent hover:bg-accent-hover text-white rounded-[8px] transition-all duration-200 flex items-center gap-[10px] shadow-sm font-bold text-[14px]"
             >
-              <Plus size={18} />
+              <Plus size={18} strokeWidth={2.5} />
               <span>Create</span>
             </button>
           </div>
@@ -595,9 +591,9 @@ const HomePage = () => {
         {/* Quick stats bar */}
         <div className="flex flex-wrap items-center gap-4 mt-6">
           {/* Stats Chip: Total Tasks */}
-          <motion.div whileHover={{ y: -4 }} className="flex items-center bg-surface/80 backdrop-blur-md border border-border/50 rounded-2xl px-[24px] py-[16px] shadow-lg min-w-[200px] flex-auto group transition-all">
-            <div className="w-[48px] h-[48px] shrink-0 rounded-full bg-gradient-to-br from-accent/20 to-accent/5 border border-accent/20 flex items-center justify-center mr-[16px] relative overflow-hidden group-hover:shadow-[0_0_15px_rgba(87,157,255,0.3)] transition-shadow">
-              <ClipboardList size={22} className="text-accent shrink-0 relative z-10" />
+          <motion.div whileHover={{ y: -2 }} className="flex items-center bg-surface border border-border/50 rounded-xl px-[20px] py-[14px] shadow-sm min-w-[180px] flex-auto group transition-all">
+            <div className="w-[40px] h-[40px] shrink-0 rounded-lg bg-accent/10 border border-accent/10 flex items-center justify-center mr-[14px]">
+              <ClipboardList size={20} className="text-accent shrink-0" />
             </div>
             <div>
               <p className="text-[12px] text-text-muted font-bold tracking-wider uppercase mb-1 drop-shadow-sm whitespace-nowrap">Total tasks</p>
@@ -608,9 +604,9 @@ const HomePage = () => {
           </motion.div>
           
           {/* Stats Chip: In Progress */}
-          <motion.div whileHover={{ y: -4 }} className="flex items-center bg-surface/80 backdrop-blur-md border border-border/50 rounded-2xl px-[24px] py-[16px] shadow-lg min-w-[200px] flex-auto group transition-all">
-            <div className="w-[48px] h-[48px] shrink-0 rounded-full bg-gradient-to-br from-warning/20 to-warning/5 border border-warning/20 flex items-center justify-center mr-[16px] relative overflow-hidden group-hover:shadow-[0_0_15px_rgba(245,205,71,0.3)] transition-shadow">
-              <Loader size={22} className="text-warning shrink-0 relative z-10 group-hover:animate-spin" />
+          <motion.div whileHover={{ y: -2 }} className="flex items-center bg-surface border border-border/50 rounded-xl px-[20px] py-[14px] shadow-sm min-w-[180px] flex-auto group transition-all">
+            <div className="w-[40px] h-[40px] shrink-0 rounded-lg bg-warning/10 border border-warning/10 flex items-center justify-center mr-[14px]">
+              <Loader size={20} className="text-warning shrink-0 group-hover:animate-spin" />
             </div>
             <div>
               <p className="text-[12px] text-text-muted font-bold tracking-wider uppercase mb-1 drop-shadow-sm whitespace-nowrap">In progress</p>
@@ -621,9 +617,9 @@ const HomePage = () => {
           </motion.div>
           
           {/* Stats Chip: Completed */}
-          <motion.div whileHover={{ y: -4 }} className="flex items-center bg-surface/80 backdrop-blur-md border border-border/50 rounded-2xl px-[24px] py-[16px] shadow-lg min-w-[200px] flex-auto group transition-all">
-            <div className="w-[48px] h-[48px] shrink-0 rounded-full bg-gradient-to-br from-success/20 to-success/5 border border-success/20 flex items-center justify-center mr-[16px] relative overflow-hidden group-hover:shadow-[0_0_15px_rgba(75,206,151,0.3)] transition-shadow">
-              <CheckCircle size={22} className="text-success shrink-0 relative z-10 group-hover:scale-110 transition-transform" />
+          <motion.div whileHover={{ y: -2 }} className="flex items-center bg-surface border border-border/50 rounded-xl px-[20px] py-[14px] shadow-sm min-w-[180px] flex-auto group transition-all">
+            <div className="w-[40px] h-[40px] shrink-0 rounded-lg bg-success/10 border border-success/10 flex items-center justify-center mr-[14px]">
+              <CheckCircle size={20} className="text-success shrink-0 group-hover:scale-110 transition-transform" />
             </div>
             <div>
               <p className="text-[12px] text-text-muted font-bold tracking-wider uppercase mb-1 drop-shadow-sm whitespace-nowrap">Completed</p>

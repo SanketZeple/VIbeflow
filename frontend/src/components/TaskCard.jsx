@@ -1,13 +1,16 @@
 import React from 'react'
 import { Clock, MoreHorizontal, UserCircle } from 'lucide-react'
 import { motion } from 'framer-motion'
+import { getUserColor, getUserInitials } from '../utils/userColors'
 
 const TaskCard = ({ task, users = [] }) => {
   
-  const getUserInitials = (userId) => {
-    if (!userId) return 'U'
+  const getAvatarData = (userId) => {
     const user = users.find(u => u.id === userId)
-    return user ? user.email.charAt(0).toUpperCase() : userId.toString().charAt(0)
+    return {
+      initials: getUserInitials(user || { email: userId?.toString() }),
+      color: getUserColor(userId)
+    }
   }
 
   const formatDate = (dateString) => {
@@ -20,14 +23,11 @@ const TaskCard = ({ task, users = [] }) => {
 
   return (
     <motion.div 
-      whileHover={{ y: -6, scale: 1.03 }}
-      transition={{ type: "spring", stiffness: 300, damping: 20 }}
-      className="group relative bg-[#22272B] hover:bg-[#2A3038] border border-white/[0.06] hover:border-accent/40 rounded-[16px] p-[24px] shadow-sm hover:shadow-[0_16px_40px_rgba(0,0,0,0.5)] transition-colors duration-300 cursor-grab active:cursor-grabbing flex flex-col gap-[20px] overflow-hidden"
+      className="group relative bg-[#1A1D21] hover:bg-[#22272B] border border-white/[0.08] hover:border-white/20 rounded-[12px] p-[20px] shadow-sm transition-all duration-300 cursor-grab active:cursor-grabbing flex flex-col gap-[16px] overflow-hidden"
     >
       
-      {/* Glow effect on hover */}
-      <div className="absolute top-0 right-0 w-[180px] h-[180px] bg-accent/20 rounded-full blur-[80px] opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none -translate-y-1/2 translate-x-1/2"></div>
-      <div className="absolute bottom-0 left-0 w-[120px] h-[120px] bg-purple-500/10 rounded-full blur-[60px] opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none translate-y-1/2 -translate-x-1/2"></div>
+      {/* Simplified hover effect */}
+      <div className="absolute inset-0 bg-white/[0.02] opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
 
       {/* Top Header: ID & Actions */}
       <div className="flex justify-between items-center relative z-10 w-full">
@@ -53,10 +53,10 @@ const TaskCard = ({ task, users = [] }) => {
         {/* Left Side: Meta info (Date, Comments) */}
         <div className="flex items-center gap-[16px] text-text-muted">
           {task.due_date && (
-            <div className={`flex items-center gap-[8px] text-[13px] font-bold px-[10px] py-[6px] rounded-[8px] transition-colors ${
-              isOverdue ? 'bg-danger/10 text-danger border border-danger/20 shadow-[0_0_12px_rgba(248,113,104,0.15)]' : 'bg-white/[0.04] text-text-secondary border border-white/[0.1]'
+            <div className={`flex items-center gap-[6px] text-[12px] font-bold px-[8px] py-[4px] rounded-[6px] transition-colors ${
+              isOverdue ? 'bg-danger/10 text-danger border border-danger/20' : 'bg-[#282D33] text-text-secondary border border-border/50'
             }`}>
-              <Clock className={`w-[16px] h-[16px] ${isOverdue ? 'animate-pulse' : ''}`} />
+              <Clock className="w-[14px] h-[14px]" />
               <span>{formatDate(task.due_date)}</span>
             </div>
           )}
@@ -68,14 +68,19 @@ const TaskCard = ({ task, users = [] }) => {
         <div className="flex justify-end">
           {task.assignee_id ? (
             <div className="relative group/avatar cursor-pointer">
-              <div className="w-[36px] h-[36px] rounded-full bg-gradient-to-tr from-accent to-purple-600 flex items-center justify-center shadow-[0_6px_16px_rgba(87,157,255,0.4)] border-[3px] border-[#22272B] group-hover/avatar:scale-110 transition-transform duration-200">
-                <span className="text-[13px] font-bold text-white shadow-sm">
-                  {getUserInitials(task.assignee_id)}
-                </span>
-              </div>
+              {(() => {
+                const { initials, color } = getAvatarData(task.assignee_id);
+                return (
+                  <div className={`w-[28px] h-[28px] rounded-full ${color} flex items-center justify-center border border-white/5 transition-transform duration-200`}>
+                    <span className="text-[10px] font-bold text-white uppercase">
+                      {initials}
+                    </span>
+                  </div>
+                );
+              })()}
               
               {/* Online status indicator */}
-              <div className="absolute -right-[2px] -bottom-[2px] w-[12px] h-[12px] bg-success rounded-full border-[2px] border-[#22272B]"></div>
+              <div className="absolute -right-[1px] -bottom-[1px] w-[10px] h-[10px] bg-success rounded-full border-[2px] border-[#1A1D21]"></div>
             </div>
           ) : (
             <div className="w-[36px] h-[36px] rounded-full bg-[#1A1D21] border-[2px] border-dashed border-white/20 flex items-center justify-center group-hover:border-accent/40 transition-colors cursor-pointer">

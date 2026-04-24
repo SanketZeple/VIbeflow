@@ -30,7 +30,7 @@ const Sidebar = () => {
                 {isActive && (
                   <motion.div 
                     layoutId="activeNavIndicator"
-                    className="absolute inset-0 bg-gradient-to-r from-accent/15 to-transparent border-l-[3px] border-accent rounded-r-[8px]"
+                    className="absolute inset-0 bg-accent/10 border-l-[3px] border-accent rounded-r-[4px]"
                     initial={false}
                     transition={{ type: "spring", stiffness: 300, damping: 30 }}
                   />
@@ -43,8 +43,8 @@ const Sidebar = () => {
                       : 'text-text-secondary hover:text-text-primary hover:bg-white/[0.02]'
                   }`}
                 >
-                  <Icon className={`w-[24px] h-[24px] mr-[16px] transition-transform duration-200 ${isActive ? 'scale-110 drop-shadow-[0_0_8px_rgba(87,157,255,0.5)]' : 'group-hover:scale-110'}`} />
-                  <span className="text-[15px] tracking-wide relative z-10 leading-none">{item.label}</span>
+                  <Icon className={`w-[20px] h-[20px] mr-[14px] transition-transform duration-200 ${isActive ? 'scale-110' : 'group-hover:scale-110'}`} />
+                  <span className="text-[14px] tracking-wide relative z-10 leading-none font-medium">{item.label}</span>
                 </Link>
               </li>
             );
@@ -55,8 +55,8 @@ const Sidebar = () => {
       {/* User profile block */}
       <div className="p-[20px] border-t border-white/[0.05] bg-black/20 backdrop-blur-md relative z-10 mt-auto">
         <div className="flex items-center gap-[16px] group cursor-pointer">
-          <div className="w-[44px] h-[44px] rounded-[14px] bg-gradient-to-br from-purple-600/30 to-accent/30 flex items-center justify-center border border-white/10 shadow-sm relative overflow-hidden group-hover:border-accent/40 transition-colors shrink-0">
-             <Zap className="w-[22px] h-[22px] text-accent opacity-80" />
+          <div className="w-[36px] h-[36px] rounded-[10px] bg-accent/10 flex items-center justify-center border border-accent/20 group-hover:bg-accent/20 transition-all shrink-0">
+             <Zap className="w-[18px] h-[18px] text-accent" />
           </div>
           <div className="flex flex-col">
             <span className="text-[15px] font-bold text-text-primary group-hover:text-accent transition-colors">VibeFlow Team</span>

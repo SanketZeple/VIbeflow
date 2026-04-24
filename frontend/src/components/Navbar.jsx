@@ -29,15 +29,15 @@ const Navbar = () => {
         <div className="flex items-center gap-[32px]">
           <Link to="/" className="flex items-center gap-[16px] group">
             <motion.div 
-              whileHover={{ rotate: 90 }}
-              transition={{ duration: 0.3 }}
-              className="w-[42px] h-[42px] bg-gradient-to-br from-purple-500 to-accent rounded-[14px] flex items-center justify-center shadow-[0_8px_24px_rgba(87,157,255,0.3)] border border-white/10 shrink-0"
+              whileHover={{ scale: 1.05 }}
+              transition={{ duration: 0.2 }}
+              className="w-[40px] h-[40px] bg-accent/20 border border-accent/40 rounded-[12px] flex items-center justify-center shrink-0"
             >
-              <Hexagon className="w-[24px] h-[24px] text-white fill-white/20" />
+              <Hexagon className="w-[22px] h-[22px] text-accent fill-accent/10" />
             </motion.div>
             <div className="flex items-center">
               <span className="text-[26px] font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-white to-text-secondary tracking-tight">VibeFlow</span>
-              <span className="text-[11px] font-bold text-white bg-accent/20 border border-accent/30 px-[10px] py-[4px] rounded-[16px] ml-[12px] tracking-widest uppercase shadow-sm">Beta</span>
+              <span className="text-[11px] font-bold text-accent bg-accent/10 border border-accent/20 px-[8px] py-[2px] rounded-[6px] ml-[10px] tracking-wider uppercase">Beta</span>
             </div>
           </Link>
         </div>
@@ -61,8 +61,8 @@ const Navbar = () => {
                   onClick={() => setProfileOpen(!profileOpen)}
                   className={`flex items-center gap-[16px] pl-[8px] pr-[16px] py-[8px] rounded-full border transition-all duration-300 ${profileOpen ? 'bg-white/5 border-white/10 shadow-sm' : 'bg-transparent border-transparent hover:bg-white/[0.03] hover:border-white/[0.05]'}`}
                 >
-                  <div className="w-[38px] h-[38px] shrink-0 bg-gradient-to-tr from-accent to-purple-600 rounded-full flex items-center justify-center shadow-inner border border-white/10">
-                   <User className="w-[20px] h-[20px] text-white" />
+                  <div className="w-[36px] h-[36px] shrink-0 bg-[#3D474F] rounded-full flex items-center justify-center border border-white/10">
+                   <User className="w-[18px] h-[18px] text-white" />
                   </div>
                   <div className="hidden lg:block text-left max-w-[150px]">
                     <p className="text-[15px] font-bold text-text-primary leading-none truncate">{user?.email?.split('@')[0] || 'User'}</p>
@@ -133,13 +133,10 @@ const Navbar = () => {
                 </Link>
                 <Link
                   to="/register"
-                  className="relative px-[24px] py-[12px] text-[15px] font-bold text-white bg-gradient-to-r from-accent to-purple-500 rounded-[12px] shadow-lg shadow-accent/20 hover:shadow-accent/40 hover:-translate-y-[2px] transition-all duration-300 overflow-hidden group"
+                  className="px-[20px] py-[10px] text-[14px] font-bold text-white bg-accent hover:bg-accent-hover rounded-[8px] shadow-sm transition-all duration-200 flex items-center gap-[8px]"
                 >
-                  <div className="absolute top-0 -inset-full h-full w-1/2 z-5 block transform -skew-x-12 bg-gradient-to-r from-transparent to-white opacity-20 group-hover:animate-shine"></div>
-                  <span className="relative z-10 flex items-center gap-[8px]">
-                    <span>Get started free</span>
-                    <Zap className="w-[18px] h-[18px] opacity-70 group-hover:opacity-100" />
-                  </span>
+                  <span>Get started free</span>
+                  <Zap className="w-[16px] h-[16px] opacity-80" />
                 </Link>
               </div>
             )

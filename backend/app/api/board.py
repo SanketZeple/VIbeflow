@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from typing import List
 
@@ -17,11 +17,7 @@ def get_board(
     current_user: UserInDB = Depends(get_current_user),
 ):
     """Get the shared board with all columns and tasks."""
-    try:
-        board = BoardService.get_board(db)
-        return board
-    except Exception as e:
-        raise HTTPException(status_code=500, detail="Failed to fetch board")
+    return BoardService.get_board(db)
 
 
 @router.post("/tasks", response_model=TaskInDB)
@@ -31,18 +27,12 @@ def create_task(
     current_user: UserInDB = Depends(get_current_user),
 ):
     """Create a new task in the Backlog column."""
-    try:
-        task = BoardService.create_task(
-            db=db,
-            title=task_data.title,
-            created_by=current_user.id,
-            due_date=task_data.due_date,
-        )
-        return task
-    except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
-    except Exception as e:
-        raise HTTPException(status_code=500, detail="Failed to create task")
+    return BoardService.create_task(
+        db=db,
+        title=task_data.title,
+        created_by=current_user.id,
+        due_date=task_data.due_date,
+    )
 
 
 @router.patch("/tasks/{task_id}", response_model=TaskInDB)
@@ -53,18 +43,12 @@ def update_task(
     current_user: UserInDB = Depends(get_current_user),
 ):
     """Update a task's column, position, assignee, etc."""
-    try:
-        task = BoardService.update_task(
-            db=db,
-            task_id=task_id,
-            user_id=current_user.id,
-            **task_update.model_dump(exclude_unset=True)
-        )
-        return task
-    except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
-    except Exception as e:
-        raise HTTPException(status_code=500, detail="Failed to update task")
+    return BoardService.update_task(
+        db=db,
+        task_id=task_id,
+        user_id=current_user.id,
+        **task_update.model_dump(exclude_unset=True)
+    )
 
 
 @router.get("/users", response_model=List[UserResponse])
@@ -73,11 +57,7 @@ def get_users(
     current_user: UserInDB = Depends(get_current_user),
 ):
     """Get all users for assignee dropdown."""
-    try:
-        users = BoardService.get_users(db)
-        return users
-    except Exception as e:
-        raise HTTPException(status_code=500, detail="Failed to fetch users")
+    return BoardService.get_users(db)
 
 
 @router.get("/tasks/{task_id}/assignment-history", response_model=List[AssignmentHistoryResponse])
@@ -87,11 +67,7 @@ def get_assignment_history(
     current_user: UserInDB = Depends(get_current_user),
 ):
     """Get assignment history for a specific task."""
-    try:
-        history = BoardService.get_assignment_history(db, task_id)
-        return history
-    except Exception as e:
-        raise HTTPException(status_code=500, detail="Failed to fetch assignment history")
+    return BoardService.get_assignment_history(db, task_id)
 
 
 @router.post("/tasks/{task_id}/worklogs", response_model=WorkLogResponse)
@@ -102,19 +78,13 @@ def create_worklog(
     current_user: UserInDB = Depends(get_current_user),
 ):
     """Create a worklog for a task."""
-    try:
-        worklog = BoardService.create_worklog(
-            db=db,
-            task_id=task_id,
-            user_id=current_user.id,
-            hours=worklog_data.hours,
-            description=worklog_data.description,
-        )
-        return worklog
-    except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
-    except Exception as e:
-        raise HTTPException(status_code=500, detail="Failed to create worklog")
+    return BoardService.create_worklog(
+        db=db,
+        task_id=task_id,
+        user_id=current_user.id,
+        hours=worklog_data.hours,
+        description=worklog_data.description,
+    )
 
 
 @router.get("/tasks/{task_id}/worklogs", response_model=List[WorkLogResponse])
@@ -124,8 +94,4 @@ def get_worklogs(
     current_user: UserInDB = Depends(get_current_user),
 ):
     """Get worklogs for a specific task."""
-    try:
-        worklogs = BoardService.get_worklogs(db, task_id)
-        return worklogs
-    except Exception as e:
-        raise HTTPException(status_code=500, detail="Failed to fetch worklogs")
+    return BoardService.get_worklogs(db, task_id)

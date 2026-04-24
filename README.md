@@ -9,6 +9,29 @@ A production‑ready fullstack starter with React (Vite) + Tailwind frontend and
 - **Database**: PostgreSQL
 - **Tooling**: ESLint, PostCSS, Vite proxy
 
+## Quick Start (Docker)
+
+Get the application running in under 5 minutes using Docker Compose:
+
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd jira_board
+   ```
+
+2. **Start the services**
+   ```bash
+   docker-compose up
+   ```
+
+3. **Open the application**
+   - Frontend: http://localhost:8080
+   - Backend API docs: http://localhost:8000/docs
+
+The stack includes PostgreSQL database, backend API, and frontend React app. No additional setup required.
+
+For detailed setup, environment variables, and manual installation, see the sections below.
+
 ## Project Structure
 
 ```
@@ -39,8 +62,221 @@ A production‑ready fullstack starter with React (Vite) + Tailwind frontend and
 │   ├── alembic/           # Database migrations
 │   ├── alembic.ini
 │   └── requirements.txt
-└── README.md
+├── README.md
 ```
+
+## API Documentation
+
+The backend API is built with FastAPI and includes the following endpoints. All endpoints except `/api/auth/register`, `/api/auth/login`, and `/api/health` require a valid JWT token in the `Authorization` header.
+
+### Authentication (`/api/auth`)
+
+#### `POST /api/auth/register`
+Register a new user and return a JWT token.
+
+**Request body:**
+```json
+{
+  "email": "user@example.com",
+  "password": "securepassword"
+}
+```
+
+**Response (success):**
+```json
+{
+  "access_token": "eyJhbGciOiJIUzI1NiIs...",
+  "token_type": "bearer"
+}
+```
+
+#### `POST /api/auth/login`
+Authenticate a user and return a JWT token.
+
+**Request body:** Same as register.
+
+**Response:** Same as register.
+
+#### `GET /api/auth/me`
+Retrieve the current authenticated user's profile.
+
+**Response:**
+```json
+{
+  "id": 1,
+  "email": "user@example.com",
+  "created_at": "2024-01-01T12:00:00Z"
+}
+```
+
+### Board Management (`/api/board`)
+
+#### `GET /api/board/`
+Fetch the entire shared board, including all columns and their tasks.
+
+**Response:**
+```json
+{
+  "columns": [
+    {
+      "id": 1,
+      "title": "Backlog",
+      "position": 0,
+      "tasks": [
+        {
+          "id": 1,
+          "title": "Implement feature X",
+          "description": null,
+          "due_date": null,
+          "assignee_id": null,
+          "column_id": 1,
+          "position": 0,
+          "created_by_id": 1,
+          "created_at": "2024-01-01T12:00:00Z"
+        }
+      ]
+    }
+  ]
+}
+```
+
+#### `POST /api/board/tasks`
+Create a new task (defaults to the "Backlog" column).
+
+**Request body:**
+```json
+{
+  "title": "New task"
+}
+```
+
+**Response:** Created task object.
+
+#### `PATCH /api/board/tasks/{task_id}`
+Update task details, including title, column, position, or assignee.
+
+**Request body (example):**
+```json
+{
+  "title": "Updated title",
+  "column_id": 2,
+  "position": 1,
+  "assignee_id": 2
+}
+```
+
+**Response:** Updated task object.
+
+#### `GET /api/board/users`
+List all users available for task assignment.
+
+**Response:**
+```json
+[
+  {
+    "id": 1,
+    "email": "user1@example.com"
+  },
+  {
+    "id": 2,
+    "email": "user2@example.com"
+  }
+]
+```
+
+#### `GET /api/board/tasks/{task_id}/assignment-history`
+Retrieve the history of assignee changes for a specific task.
+
+**Response:**
+```json
+[
+  {
+    "id": 1,
+    "task_id": 1,
+    "old_assignee_id": null,
+    "new_assignee_id": 1,
+    "changed_by_id": 2,
+    "changed_at": "2024-01-01T12:00:00Z"
+  }
+]
+```
+
+#### `POST /api/board/tasks/{task_id}/worklogs`
+Log time spent (hours) on a specific task with an optional description.
+
+**Request body:**
+```json
+{
+  "hours": 2.5,
+  "description": "Implemented feature X"
+}
+```
+
+**Response:** Created worklog object.
+
+#### `GET /api/board/tasks/{task_id}/worklogs`
+List all worklogs logged for a specific task.
+
+**Response:**
+```json
+[
+  {
+    "id": 1,
+    "hours": 2.5,
+    "description": "Implemented feature X",
+    "logged_by_id": 1,
+    "logged_at": "2024-01-01T12:00:00Z"
+  }
+]
+```
+
+### Reports (`/api/reports`)
+
+#### `GET /api/reports/time`
+Generate a time report showing total hours logged per task and a grand total for the project.
+
+**Response:**
+```json
+{
+  "tasks": [
+    {
+      "id": 1,
+      "title": "Task A",
+      "status": "In Progress",
+      "assignee_email": "user@example.com",
+      "total_hours": 5.5
+    }
+  ],
+  "grand_total": 5.5
+}
+```
+
+### System
+
+#### `GET /api/health`
+Check the health status of the backend API.
+
+**Response:**
+```json
+{
+  "status": "healthy",
+  "timestamp": "2024-01-01T12:00:00Z"
+}
+```
+
+#### `GET /`
+Root endpoint returning a welcome message.
+
+**Response:**
+```json
+{
+  "message": "Welcome to VibeFlow Kanban Board API"
+}
+```
+
+> [!TIP]
+> You can access interactive API documentation (Swagger UI) at `http://localhost:8000/docs` once the backend is running.
+
 
 ## Getting Started
 

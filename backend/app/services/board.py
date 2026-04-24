@@ -8,6 +8,7 @@ from app.models.assignment_history import AssignmentHistory
 from app.models.user import User
 from app.models.worklog import WorkLog
 from app.schemas.board import BoardResponse, BoardColumn, TaskInDB, TaskCreate, TaskTimeReport, TimeReportResponse
+from app.core.exceptions import NotFoundException, ValidationException
 
 
 class BoardService:
@@ -46,7 +47,7 @@ class BoardService:
         # Get Backlog column
         backlog_column = db.query(Column).filter(Column.name == "Backlog").first()
         if not backlog_column:
-            raise ValueError("Backlog column not found")
+            raise NotFoundException("Backlog column not found. System configuration error.")
 
         # Compute next position (max + 1) atomically within transaction
         max_position = db.query(func.max(Task.position)).filter(Task.column_id == backlog_column.id).scalar()
@@ -79,7 +80,8 @@ class BoardService:
         """
         task = db.query(Task).filter(Task.id == task_id).first()
         if not task:
-            raise ValueError("Task not found")
+            raise NotFoundException(f"Task with ID {task_id} not found")
+
 
         old_assignee_id = task.assignee_id
         old_column_id = task.column_id
@@ -188,11 +190,11 @@ class BoardService:
         # Ensure task exists
         task = db.query(Task).filter(Task.id == task_id).first()
         if not task:
-            raise ValueError("Task not found")
+            raise NotFoundException(f"Task with ID {task_id} not found")
         
-        # Validate hours positive (already validated by schema, but double-check)
+        # Validate hours positive
         if hours <= 0:
-            raise ValueError("Hours must be positive")
+            raise ValidationException("Logged hours must be a positive number")
         
         worklog = WorkLog(
             task_id=task_id,

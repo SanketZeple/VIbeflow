@@ -42,8 +42,9 @@ class BoardService:
         return BoardResponse(columns=column_responses)
 
     @staticmethod
-    def create_task(db: Session, title: str, created_by: int, due_date: Optional[datetime] = None) -> Task:
+    def create_task(db: Session, title: str, created_by: int, priority: str = "Medium", due_date: Optional[datetime] = None) -> Task:
         """Create a new task in the Backlog column with atomic position."""
+
         # Get Backlog column
         backlog_column = db.query(Column).filter(Column.name == "Backlog").first()
         if not backlog_column:
@@ -58,8 +59,10 @@ class BoardService:
             column_id=backlog_column.id,
             position=next_position,
             assignee_id=None,
+            priority=priority,
             due_date=due_date,
             created_by=created_by,
+
         )
         db.add(task)
         db.commit()
@@ -142,6 +145,9 @@ class BoardService:
             task.title = kwargs['title']
         if 'due_date' in kwargs:
             task.due_date = kwargs['due_date']
+        if 'priority' in kwargs:
+            task.priority = kwargs['priority']
+
 
         db.commit()
         db.refresh(task)
@@ -173,10 +179,30 @@ class BoardService:
 
     @staticmethod
     def get_assignment_history(db: Session, task_id: int) -> List[AssignmentHistory]:
-        """Get assignment history for a specific task."""
-        return db.query(AssignmentHistory).filter(
+        """Get assignment history for a specific task with user names."""
+        history = db.query(AssignmentHistory).filter(
             AssignmentHistory.task_id == task_id
         ).order_by(AssignmentHistory.changed_at.desc()).all()
+        
+        for h in history:
+            # Get old assignee name
+            if h.old_assignee_id:
+                old_user = db.query(User).filter(User.id == h.old_assignee_id).first()
+                if old_user:
+                    h.old_assignee_name = old_user.full_name or old_user.email.split('@')[0]
+            
+            # Get new assignee name
+            if h.new_assignee_id:
+                new_user = db.query(User).filter(User.id == h.new_assignee_id).first()
+                if new_user:
+                    h.new_assignee_name = new_user.full_name or new_user.email.split('@')[0]
+            
+            # Get changed by name
+            changer = db.query(User).filter(User.id == h.changed_by).first()
+            if changer:
+                h.changed_by_name = changer.full_name or changer.email.split('@')[0]
+                
+        return history
 
     @staticmethod
     def create_worklog(
@@ -209,10 +235,18 @@ class BoardService:
 
     @staticmethod
     def get_worklogs(db: Session, task_id: int) -> List[WorkLog]:
-        """Get worklogs for a specific task."""
-        return db.query(WorkLog).filter(
+        """Get worklogs for a specific task with user details."""
+        worklogs = db.query(WorkLog).filter(
             WorkLog.task_id == task_id
         ).order_by(WorkLog.logged_at.desc()).all()
+        
+        # Attach user details for the schema to pick up
+        for wl in worklogs:
+            user = db.query(User).filter(User.id == wl.user_id).first()
+            if user:
+                wl.user_name = user.full_name or user.email.split('@')[0]
+                wl.user_email = user.email
+        return worklogs
 
     @staticmethod
     def get_time_report(db: Session) -> TimeReportResponse:
@@ -221,14 +255,17 @@ class BoardService:
         tasks = db.query(Task).join(Column, Task.column_id == Column.id)\
                               .outerjoin(User, Task.assignee_id == User.id)\
                               .outerjoin(WorkLog, Task.id == WorkLog.task_id)\
-                              .group_by(Task.id, Column.name, User.email)\
+                              .group_by(Task.id, Column.name, User.email, User.full_name)\
                               .with_entities(
                                   Task.id,
                                   Task.title,
                                   Column.name.label('status'),
                                   User.email.label('assignee_email'),
+                                  User.full_name.label('assignee_name'),
+                                  Task.priority,
                                   func.coalesce(func.sum(WorkLog.hours), 0).label('total_hours')
                               ).all()
+
         
         report_tasks = []
         grand_total = 0.0
@@ -239,7 +276,10 @@ class BoardService:
                     title=t.title,
                     status=t.status,
                     assignee_email=t.assignee_email,
+                    assignee_name=t.assignee_name,
+                    priority=t.priority,
                     total_hours=t.total_hours
+
                 )
             )
             grand_total += t.total_hours

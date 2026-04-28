@@ -24,6 +24,7 @@ const FloatingElement = ({ children, delay, className }) => (
 )
 
 const RegisterPage = () => {
+  const [fullName, setFullName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
@@ -75,7 +76,11 @@ const RegisterPage = () => {
     setLoading(true)
 
     try {
-      const response = await api.post('/auth/register', { email, password }, { hideLoader: true })
+      const response = await api.post('/auth/register', { 
+        email, 
+        password,
+        full_name: fullName
+      }, { hideLoader: true })
       const { access_token } = response.data
       const userResponse = await api.get('/auth/me', {
         headers: { Authorization: `Bearer ${access_token}` },
@@ -158,6 +163,19 @@ const RegisterPage = () => {
 
           <motion.div variants={itemVariants} className="bg-surface/80 backdrop-blur-xl rounded-3xl shadow-2xl p-8 border border-white/[0.05]">
             <form onSubmit={handleSubmit} className="space-y-6">
+              <motion.div variants={itemVariants}>
+                <ModernInput
+                  label="Full name"
+                  type="text"
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
+                  placeholder="John Doe"
+                  required
+                  autoFocus
+                  className="w-full"
+                />
+              </motion.div>
+
               <motion.div variants={itemVariants}>
                 <ModernInput
                   label="Work email"

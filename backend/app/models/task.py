@@ -12,7 +12,9 @@ class Task(Base):
     column_id = Column(Integer, ForeignKey("columns.id"), nullable=False)
     position = Column(Integer, nullable=False, default=0)
     assignee_id = Column(Integer, ForeignKey("users.id"), nullable=True)
+    priority = Column(String(50), nullable=False, default="Medium")
     due_date = Column(DateTime(timezone=True), nullable=True)
+
     created_by = Column(Integer, ForeignKey("users.id"), nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())

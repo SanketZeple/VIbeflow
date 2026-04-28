@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Bell, UserCircle, Settings, LogOut, Hexagon, ChevronDown, User, Zap } from 'lucide-react'
 import useAuth from '../hooks/useAuth'
+import { getUserColor, getUserInitials } from '../utils/userColors'
 
 const Navbar = () => {
   const { isAuthenticated, user, logout } = useAuth()
@@ -37,7 +38,6 @@ const Navbar = () => {
             </motion.div>
             <div className="flex items-center">
               <span className="text-[26px] font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-white to-text-secondary tracking-tight">VibeFlow</span>
-              <span className="text-[11px] font-bold text-accent bg-accent/10 border border-accent/20 px-[8px] py-[2px] rounded-[6px] ml-[10px] tracking-wider uppercase">Beta</span>
             </div>
           </Link>
         </div>
@@ -61,11 +61,13 @@ const Navbar = () => {
                   onClick={() => setProfileOpen(!profileOpen)}
                   className={`flex items-center gap-[16px] pl-[8px] pr-[16px] py-[8px] rounded-full border transition-all duration-300 ${profileOpen ? 'bg-white/5 border-white/10 shadow-sm' : 'bg-transparent border-transparent hover:bg-white/[0.03] hover:border-white/[0.05]'}`}
                 >
-                  <div className="w-[36px] h-[36px] shrink-0 bg-[#3D474F] rounded-full flex items-center justify-center border border-white/10">
-                   <User className="w-[18px] h-[18px] text-white" />
+                  <div className={`w-[36px] h-[36px] shrink-0 ${getUserColor(user?.id)} rounded-full flex items-center justify-center border border-white/10 shadow-sm shadow-black/20 group-hover:scale-105 transition-transform`}>
+                    <span className="text-[12px] font-black text-white uppercase tracking-tight">
+                      {getUserInitials(user)}
+                    </span>
                   </div>
                   <div className="hidden lg:block text-left max-w-[150px]">
-                    <p className="text-[15px] font-bold text-text-primary leading-none truncate">{user?.email?.split('@')[0] || 'User'}</p>
+                    <p className="text-[15px] font-bold text-text-primary leading-none truncate">{user?.full_name || user?.email?.split('@')[0] || 'User'}</p>
                   </div>
                   <motion.div 
                     animate={{ rotate: profileOpen ? 180 : 0 }}
@@ -87,7 +89,7 @@ const Navbar = () => {
                       className="absolute right-0 top-full mt-[16px] w-[260px] bg-[#22272B]/95 backdrop-blur-xl rounded-[16px] border border-white/10 shadow-[0_12px_40px_rgba(0,0,0,0.6)] py-[8px] z-50 origin-top-right overflow-hidden"
                     >
                       <div className="px-[24px] py-[16px] border-b border-white/5 bg-white/[0.01]">
-                        <p className="text-[15px] font-bold text-white mb-[4px]">{user?.email?.split('@')[0] || 'User'}</p>
+                        <p className="text-[15px] font-bold text-white mb-[4px]">{user?.full_name || user?.email?.split('@')[0] || 'User'}</p>
                         <p className="text-[13px] text-text-muted truncate">{user?.email}</p>
                       </div>
                       <div className="py-[8px]">

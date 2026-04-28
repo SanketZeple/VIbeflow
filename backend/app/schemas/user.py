@@ -6,6 +6,7 @@ import re
 
 class UserBase(BaseModel):
     email: str
+    full_name: Optional[str] = None
 
     @field_validator('email')
     @classmethod
@@ -17,6 +18,7 @@ class UserBase(BaseModel):
 
 class UserCreate(UserBase):
     password: str = Field(..., min_length=8)
+    full_name: str = Field(..., min_length=1)
 
 
 class UserLogin(BaseModel):

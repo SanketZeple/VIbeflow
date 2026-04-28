@@ -5,6 +5,7 @@ import HomePage from './pages/HomePage'
 import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
 import TimeReportPage from './pages/TimeReportPage'
+import TeamMembersPage from './pages/TeamMembersPage'
 import Navbar from './components/Navbar'
 import Sidebar from './components/Sidebar'
 
@@ -41,6 +42,11 @@ function App() {
               <Route path="/reports/time" element={
                 <ProtectedRoute>
                   <TimeReportPage />
+                </ProtectedRoute>
+              } />
+              <Route path="/teams" element={
+                <ProtectedRoute>
+                  <TeamMembersPage />
                 </ProtectedRoute>
               } />
               <Route path="*" element={<Navigate to="/" replace />} />

@@ -5,16 +5,20 @@ import { Plus, Calendar, X } from 'lucide-react'
 const CreateTaskModal = ({ isOpen, onClose, onCreate }) => {
   const [title, setTitle] = useState('')
   const [dueDate, setDueDate] = useState('')
+  const [priority, setPriority] = useState('Medium')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+
 
   // Reset state when opened
   useEffect(() => {
     if (isOpen) {
       setTitle('')
       setDueDate('')
+      setPriority('Medium')
       setError('')
     }
+
   }, [isOpen])
 
   const handleSubmit = async (e) => {
@@ -38,7 +42,16 @@ const CreateTaskModal = ({ isOpen, onClose, onCreate }) => {
         setError('Invalid due date')
         return
       }
-      dueDateObj = parsed.toISOString()
+      
+      // Prevent past dates using local time string comparison
+      const localTodayStr = new Date().toLocaleDateString('en-CA'); // Gets YYYY-MM-DD
+      const dateOnlyStr = dueDate.split('T')[0];
+      if (dateOnlyStr < localTodayStr) {
+        setError('Due date cannot be in the past')
+        return
+      }
+      
+      dueDateObj = new Date(dueDate).toISOString()
     }
 
     setLoading(true)
@@ -46,7 +59,9 @@ const CreateTaskModal = ({ isOpen, onClose, onCreate }) => {
       await onCreate({
         title: trimmedTitle,
         dueDate: dueDateObj,
+        priority,
       })
+
       onClose()
     } catch (err) {
       setError(err.message || 'Failed to create task')
@@ -148,11 +163,39 @@ const CreateTaskModal = ({ isOpen, onClose, onCreate }) => {
                     id="dueDate"
                     value={dueDate}
                     onChange={(e) => setDueDate(e.target.value)}
+                    min={new Date().toISOString().split('T')[0]}
                     className="w-full sm:w-[220px] pl-10 pr-4 py-2.5 bg-[#1A1D21] border border-border/80 hover:border-white/20 text-white text-[14px] rounded-xl focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent transition-all shadow-inner [color-scheme:dark]"
                     disabled={loading}
                   />
                 </div>
               </div>
+              
+              {/* Priority Dropdown */}
+              <div className="mb-6">
+                <label htmlFor="priority" className="block text-[13px] font-semibold tracking-wide text-text-secondary uppercase mb-2">
+                  Priority
+                </label>
+                <div className="relative">
+                  <select
+                    id="priority"
+                    value={priority}
+                    onChange={(e) => setPriority(e.target.value)}
+                    className="w-full pl-4 pr-10 py-2.5 bg-[#1A1D21] border border-border/80 hover:border-white/20 text-white text-[14px] rounded-xl focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-accent transition-all shadow-inner appearance-none cursor-pointer"
+                    disabled={loading}
+                  >
+                    <option value="Low">Low</option>
+                    <option value="Medium">Medium</option>
+                    <option value="High">High</option>
+                    <option value="Urgent">Urgent</option>
+                  </select>
+                  <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-text-muted">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+
 
               {/* Error message */}
               <AnimatePresence>

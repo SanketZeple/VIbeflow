@@ -34,7 +34,18 @@ const TaskCard = ({ task, users = [] }) => {
         <div className="flex items-center gap-[12px]">
 
           <span className="text-[14px] font-bold text-text-muted uppercase tracking-wider">VF-{task.id}</span>
+          {task.priority && (
+            <span className={`px-[8px] py-[2px] rounded-[6px] text-[10px] font-extrabold uppercase tracking-wider border ${
+              task.priority === 'Urgent' ? 'bg-danger/10 text-danger border-danger/20' :
+              task.priority === 'High' ? 'bg-warning/10 text-warning border-warning/20' :
+              task.priority === 'Medium' ? 'bg-accent/10 text-accent border-accent/20' :
+              'bg-white/5 text-text-muted border-white/10'
+            }`}>
+              {task.priority}
+            </span>
+          )}
         </div>
+
         
         {/* Options Menu */}
         <button className="text-text-muted hover:text-white p-[6px] -mr-[6px] rounded-[8px] hover:bg-white/10 opacity-0 group-hover:opacity-100 transition-all duration-200">

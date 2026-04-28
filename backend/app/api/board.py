@@ -31,7 +31,9 @@ def create_task(
         db=db,
         title=task_data.title,
         created_by=current_user.id,
+        priority=task_data.priority,
         due_date=task_data.due_date,
+
     )
 
 

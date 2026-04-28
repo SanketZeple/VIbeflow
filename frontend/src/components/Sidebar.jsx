@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom'
-import { LayoutDashboard, PieChart, Zap } from 'lucide-react'
+import { LayoutDashboard, PieChart, Users, Zap } from 'lucide-react'
 import { motion } from 'framer-motion'
 
 const Sidebar = () => {
@@ -7,6 +7,7 @@ const Sidebar = () => {
 
   const navItems = [
     { path: '/', label: 'Project Board', icon: LayoutDashboard },
+    { path: '/teams', label: 'Teams', icon: Users },
     { path: '/reports/time', label: 'Time Report', icon: PieChart },
   ]
 

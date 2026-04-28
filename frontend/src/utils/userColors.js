@@ -42,12 +42,12 @@ export const getUserColor = (userId) => {
  * If multi word or dots, returns first letter of each (e.g. Sanket.Zeple -> SZ).
  */
 export const getUserInitials = (user) => {
-  if (!user) return 'U';
-  const nameInput = typeof user === 'string' ? user : (user.name || user.email || '');
-  if (!nameInput) return 'U';
+  if (!user) return '?';
+  const nameInput = user.full_name || user.email || (typeof user === 'string' ? user : '');
+  if (!nameInput) return '?';
   
-  // Clean potential email part
-  const name = nameInput.split('@')[0];
+  // Clean email to use as name if full_name is missing
+  const name = nameInput.includes('@') ? nameInput.split('@')[0] : nameInput;
   
   // if format is First.Last or contains spaces
   if (name.includes('.') || name.includes(' ')) {

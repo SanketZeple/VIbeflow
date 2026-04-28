@@ -54,17 +54,17 @@ const HomePage = () => {
     fetchUsers()
   }, [])
 
-  const fetchBoard = async () => {
+  const fetchBoard = async (silent = false) => {
     try {
-      setLoading(true)
+      if (!silent) setLoading(true)
       const data = await boardService.getBoard()
       setBoard(data)
       setError(null)
     } catch (err) {
       console.error('Failed to load board:', err)
-      setError('Failed to load board. Please try again.')
+      if (!silent) setError('Failed to load board. Please try again.')
     } finally {
-      setLoading(false)
+      if (!silent) setLoading(false)
     }
   }
 
@@ -408,7 +408,7 @@ const HomePage = () => {
           isOpen={taskModalOpen}
           onClose={() => setTaskModalOpen(false)}
           task={selectedTask}
-          onUpdate={fetchBoard} // Refresh board after update
+          onUpdate={() => fetchBoard(true)} // Refresh board after update
           users={users}
         />
       </div>
@@ -448,8 +448,8 @@ const HomePage = () => {
               <h1 className="text-[32px] font-extrabold text-text-primary leading-tight tracking-tight mb-[4px]">Project Board</h1>
               <div className="flex items-center gap-[16px]">
                 <span className="text-[14px] font-bold text-text-secondary flex items-center gap-[6px] bg-surface-hover px-[12px] py-[6px] rounded-[8px] border border-border/50">
-                  <UserIcon className="w-[16px] h-[16px] text-accent" strokeWidth={2.5}/>
-                  {user?.email?.split('@')[0] || 'User'}
+                  <UserIcon className="w-[20px] h-[20px] text-accent" strokeWidth={2.5}/>
+                  {user?.full_name || user?.email?.split('@')[0] || 'User'}
                 </span>
                 <span className="text-[14px] font-bold text-text-secondary flex items-center gap-[6px] bg-surface-hover px-[12px] py-[6px] rounded-[8px] border border-border/50">
                   <Calendar className="w-[16px] h-[16px] text-purple-400" strokeWidth={2.5} />
@@ -489,8 +489,10 @@ const HomePage = () => {
                       onChange={(e) => setFilterOptions({...filterOptions, assigneeId: e.target.value ? parseInt(e.target.value) : null})}
                     >
                       <option value="">All assignees</option>
-                      {users.map(user => (
-                        <option key={user.id} value={user.id}>{user.email}</option>
+                      {users.map(userItem => (
+                        <option key={userItem.id} value={userItem.id}>
+                          {userItem.email.split('@')[0]}{userItem.id === user?.id ? ' (You)' : ''}
+                        </option>
                       ))}
                     </select>
                   </div>
@@ -673,13 +675,14 @@ const HomePage = () => {
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
         onCreate={handleCreateTask}
+        users={users}
       />
 
       <TaskModal
         isOpen={taskModalOpen}
         onClose={() => setTaskModalOpen(false)}
         task={selectedTask}
-        onUpdate={fetchBoard} // Refresh board after update
+        onUpdate={() => fetchBoard(true)} // Refresh board after update
         users={users}
       />
       </motion.div>

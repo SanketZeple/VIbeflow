@@ -13,6 +13,8 @@ import {
   LayoutDashboard
 } from 'lucide-react'
 import boardService from '../services/board'
+import useAuth from '../hooks/useAuth'
+
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -33,8 +35,11 @@ const itemVariants = {
 
 const TimeReportPage = () => {
   const [report, setReport] = useState(null)
+  const [teamMembers, setTeamMembers] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const { user: currentUser } = useAuth()
+
 
   useEffect(() => {
     fetchTimeReport()
@@ -43,10 +48,15 @@ const TimeReportPage = () => {
   const fetchTimeReport = async () => {
     try {
       setLoading(true)
-      const data = await boardService.getTimeReport()
-      setReport(data)
+      const [reportData, usersData] = await Promise.all([
+        boardService.getTimeReport(),
+        boardService.getUsers()
+      ])
+      setReport(reportData)
+      setTeamMembers(usersData)
       setError(null)
     } catch (err) {
+
       console.error('Failed to load time report:', err)
       setError('Failed to load time report. Please try again.')
     } finally {
@@ -170,11 +180,12 @@ const TimeReportPage = () => {
             },
             {
               title: "Team Members",
-              value: new Set(report.tasks.filter(t => t.assignee_email).map(t => t.assignee_email)).size,
+              value: teamMembers.filter(u => u.email !== currentUser?.email).length,
               icon: Users,
               color: "text-warning",
               bg: "bg-warning-bg",
             }
+
           ].map((stat, idx) => (
             <motion.div 
               key={idx}
@@ -223,7 +234,7 @@ const TimeReportPage = () => {
                     Pipeline Status
                   </th>
                   <th scope="col" className="px-6 py-4 text-left text-xs font-semibold text-text-muted uppercase tracking-wider">
-                    Assigned To
+                    Assignee
                   </th>
                   <th scope="col" className="px-6 py-4 text-left text-xs font-semibold text-text-muted uppercase tracking-wider w-1/4">
                     Logged Hours

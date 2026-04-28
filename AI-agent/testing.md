@@ -11,7 +11,6 @@
 
 ## Guidelines
 - Focus on core business logic
-- Avoid UI testing
 - Avoid trivial CRUD tests
 
 ## Coverage Rules

@@ -11,7 +11,7 @@
 
 ## Guidelines
 - Focus on core business logic
-- Avoid trivial CRUD tests
+- Avoid trivial CRUD tests 
 
 ## Coverage Rules
 - Validate main feature flows

@@ -12,12 +12,12 @@ steps:
     stage: build
     image: docker:24.0.7
     commands:
-      - docker build -t "$DOCKERHUB_USERNAME/fastapi-backend:latest" -f ./backend/Dockerfile ./backend
+      - docker build -t "$DOCKERHUB_USERNAME/fastapi-backend:latest" -f backend/Dockerfile backend
       - docker push "$DOCKERHUB_USERNAME/fastapi-backend:latest"
 
   - name: Build and push Frontend Docker image
     stage: build
     image: docker:24.0.7
     commands:
-      - docker build -t "$DOCKERHUB_USERNAME/frontend-app:latest" -f ./frontend/Dockerfile ./frontend
+      - docker build -t "$DOCKERHUB_USERNAME/frontend-app:latest" -f frontend/Dockerfile frontend
       - docker push "$DOCKERHUB_USERNAME/frontend-app:latest"
